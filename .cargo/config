@@ -1,0 +1,7 @@
+# .cargo/config
+[build]
+# Always compile for the instruction set of the STM32F1
+target = "thumbv7m-none-eabi"
+
+# Use the Tlink.x script from the cortex-n-rt crate
+rustflags = ["-C", "link-arg=-Tlink.x", "-g"]

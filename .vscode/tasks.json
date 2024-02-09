@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Debug Build",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["build"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Release Build",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["build", "--release"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Debug Flash",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["flash", "--chip", "stm32f411ceux"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Release Flash",
+        "type": "shell",
+        "command": "cargo",
+        "args": ["flash", "--chip", "stm32f411ceux", "--release"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Host Info",
+        "type": "shell",
+        "command": "probe-rs-cli",
+        "args": ["info"]
+      }
+    ]
+}
