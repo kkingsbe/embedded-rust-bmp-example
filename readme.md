@@ -1,24 +1,17 @@
-## Debugging:
-1. Install VSCode
-2. Install `probe-rs` with the following command:
-   - `cargo install probe-rs --features cli`
-3. Add the neccesary build target with the following command:
-    - `rustup target install thumbv7m-none-eabi`
-4. The rest "should" already be setup & work. You can add a new breakpoint by clicking on the left margin next to any line of code.
+# Multi-Mission Library (rs)
+This crate is designed to hold composable, reusable driver code / wrappers for various sensors and hardware output devices. Currently it does not support differing STM32 models and only supports the STM32F4, however moving into the future that will be the plan.
 
-## Setting up debugging for a new project
-To set up debugging within a new project, you can use the `launch.json` and `tasks.json` files as a template. The main important points to remember are the following:
-- To debug you **must** be using a build which has no link-time optimizations or compiler optimizations. Easiest way to guarantee this is to just use a non-release build.
+## Repo Structure
+### Top Level
+The top level modules within the `src` directory are for the different categories of devices which may need driver code. Currently there is only a `sensor` module, but some other examples would be `stepper_motor`, `servo`, `display`, etc. 
 
-### Automating the build process:
-To automate the build process, you can use vscodes "tasks" feature. It allows you to define different tasks within the `tasks.json` file, which are just console commands. These tasks can then be invoked from launch scripts within the `launch.json` file. This repo has 4 tasks defined, for preforming debug & release builds & deployments. The debug build task is then called from the `launch.json` before it begins the debugging process.
+### 2nd Level
+Within the top level modules, there are more specific modules that are still somewhat generalized. Examples of modules which could go within the `sensor` module are `barometer`, `imu`, `magnetometer`, etc. These modules each define at least one trait to define the behavior which all submodules within them will follow. For example, wihtin the `barometer` module there is a `Barometer` trait which defines functionality that is used by all barometers, such as reading the pressure, temperature, and determining altitude.
 
-## Automated Testing
-In order to prevent flawed code from making it onto a flight vehicle, and to make it easier to know when bad code made it into the codebase, I *strongly* recommend using Github actions to automatically build the codebase on each commit. It is also able to run any tests which are specified in the codebase. You can use the file located at `.github/workflows/rust.yml` as a starting point for your workflow.
+### 3rd Level
+Within the next level of nesting, we have modules for specific hardware. For example, at `sensor::barometer::bmp180` we have a module specifically for the BMP180 barometric pressure sensor. This module implements all of the traits defined in the modules above it, so in this specific case it would implement the `Sensor` and `Barometer` traits. This allows for extremely predictable functionality, and for switching between physical sensors without having to change *any* code (assuming there is already a driver written for the new sensor).
 
-## Additional Resources
-[Rust on an STM32 Microcontroller (Medium.com)](https://medium.com/digitalfrontiers/rust-on-a-stm32-microcontroller-90fac16f6342)
+### Additional Comments
+Of course everything previously described are simply the initial guidelines which are set out by one person (myself). The code structure and guidelines will (and should) shift as more people begin to contribute to this crate, and as different subteams use this code for their projects.
 
-[Rust on STM32: Getting Started (jonathanklimt.de)](https://jonathanklimt.de/electronics/programming/embedded-rust/rust-on-stm32-2/)
-
-[probe.rs documentation](https://probe.rs/docs/getting-started/installation/)
+To see a template repo of how to set up the toolchain for programming an STM32 with Rust, take a look at [this link](https://github.com/kkingsbe/embedded-rust-stm)
