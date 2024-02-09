@@ -1,18 +1,22 @@
-/*
-pub enum SensorState {
-    CALIBRATING,
-    READY,
-    ERROR(String)
+pub mod barometer;
+use stm32f4xx_hal::i2c::{I2c, Instance as I2cInstance};
+
+pub enum SensorError {
+    I2CError,
+    NotFound,
+    FailedToCalibrate
 }
 
-pub struct SensorConfig {
-    pub address: u8
+pub enum SensorState {
+    INITIAL,
+    STARTUP,
+    CALIBRATING,
+    READY,
+    ERROR(SensorError)
 }
 
 pub trait Sensor {
-    fn init(&self) -> SensorState;
-    fn get_config(&self) -> SensorConfig;
-    fn set_config(&self, config: SensorConfig) -> SensorState;
-    fn read(&self) -> f32;
+    fn init(&mut self) -> Result<(), ()>;
+    fn calibrate(&mut self) -> Result<(), ()>;
+    fn sensor_state(&self) -> &SensorState;
 }
-*/

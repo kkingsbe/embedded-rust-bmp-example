@@ -6,11 +6,11 @@
 #![no_main]
 #![no_std]
 
-mod sensor;
-mod barometer;
-pub mod bmp180;
+pub mod sensor;
+use crate::sensor::barometer::Barometer;
+use crate::sensor::Sensor;
+use sensor::barometer::bmp180::BMP180;
 
-use bmp180::BMP180;
 use cortex_m::asm::nop;
 use panic_halt as _;
 use stm32f4xx_hal as hal;
