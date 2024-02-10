@@ -5,7 +5,7 @@ use crate::sensor::{SensorError, SensorState};
 use super::{BmpData, Coeffs, RegisterMap, BMP180};
 
 impl<'a, T  > BMP180<'a, T> where T: I2cInstance {
-    pub fn new(i2c: &'a mut I2c<T>, delay: &'a mut DelayMs<TIM1>) -> Self {
+    pub fn new(i2c: &'a mut I2c<T>/*, delay: &'a mut DelayMs<TIM1>*/) -> Self {
         BMP180 {
             calib_coeffs: Coeffs {
                 ac5: 0,
@@ -26,7 +26,7 @@ impl<'a, T  > BMP180<'a, T> where T: I2cInstance {
             },
             i2c,
             state: SensorState::INITIAL,
-            delay,
+            //delay,
             data: BmpData::new()
         }
     }

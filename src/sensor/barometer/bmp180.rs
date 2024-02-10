@@ -33,7 +33,7 @@ pub struct BMP180<'a, T> where T: I2cInstance {
     pub register_map: RegisterMap,
     pub i2c: &'a mut I2c<T>, //Allows for the BMP180 struct to not take ownership of the I2C instance, which means multiple devices can be on the same bus :)
     pub state: SensorState,
-    pub delay: &'a mut DelayMs<TIM1>,
+    //pub delay: &'a mut DelayMs<TIM1>,
     data: BmpData
 }
 

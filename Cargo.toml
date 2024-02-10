@@ -20,3 +20,7 @@ panic-halt = "^0.2.0"
 [dependencies.stm32f4xx-hal]
 features = ["stm32f411"]
 version = "0.20.0"
+
+[dependencies.heapless]
+features = ["defmt-03"]
+version = "0.8.0"

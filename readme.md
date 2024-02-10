@@ -15,3 +15,8 @@ Within the next level of nesting, we have modules for specific hardware. For exa
 Of course everything previously described are simply the initial guidelines which are set out by one person (myself). The code structure and guidelines will (and should) shift as more people begin to contribute to this crate, and as different subteams use this code for their projects.
 
 To see a template repo of how to set up the toolchain for programming an STM32 with Rust, take a look at [this link](https://github.com/kkingsbe/embedded-rust-stm)
+
+### Blackpill Development Board Special Notes
+**Serial**:
+
+While the board *does* include a USB port, I have not yet been able to get it to enumerate as a USB device in windows. For now, an external FTDI serial to uart bridge will be used for USB comms. For this to work, the clock rate *must* be set to 25MHz.
