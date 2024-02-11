@@ -160,18 +160,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "embedded-rust-stm"
-version = "0.1.0"
-dependencies = [
- "cortex-m",
- "cortex-m-rt",
- "embedded-hal 0.2.7",
- "heapless",
- "panic-halt",
- "stm32f4xx-hal",
-]
-
-[[package]]
 name = "embedded-storage"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -247,6 +235,18 @@ name = "litrs"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4ce301924b7887e9d637144fdade93f9dfff9b60981d4ac161db09720d39aa5"
+
+[[package]]
+name = "multi-mission-library-rs"
+version = "0.1.0"
+dependencies = [
+ "cortex-m",
+ "cortex-m-rt",
+ "embedded-hal 0.2.7",
+ "heapless",
+ "panic-halt",
+ "stm32f4xx-hal",
+]
 
 [[package]]
 name = "nb"

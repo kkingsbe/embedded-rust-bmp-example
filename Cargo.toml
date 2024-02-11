@@ -1,7 +1,12 @@
 [package]
-name = "embedded-rust-stm"
+name = "multi-mission-library-rs"
 version = "0.1.0"
-edition = "2021"
+description = "This crate is designed to hold composable, reusable driver code / wrappers for various sensors and hardware output devices. Currently it does not support differing STM32 models and only supports the STM32F4, however moving into the future that will be the plan."
+license = "MIT"
+
+[lib]
+name = "multi_mission_library"
+path = "src/lib.rs"
 
 [profile.dev]
 opt-level = 0
