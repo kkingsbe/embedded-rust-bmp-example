@@ -1,4 +1,4 @@
-use crate::BMP180;
+use crate::sensor::barometer::bmp180::bmp180_s::BMP180;
 use crate::sensor::Sensor;
 use crate::sensor::SensorState;
 use stm32f4xx_hal::i2c::{I2c, Instance as I2cInstance};

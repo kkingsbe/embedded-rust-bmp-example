@@ -1,6 +1,4 @@
-use crate::LSM9DS1;
-use crate::sensor::Sensor;
-use crate::sensor::SensorState;
+use crate::sensor::{Sensor, SensorState, imu::lsm9ds1::lsm9ds1_s::LSM9DS1};
 use stm32f4xx_hal::i2c::{I2c, Instance as I2cInstance};
 
 impl <'a, T> Sensor for LSM9DS1<'a, T> where T: I2cInstance {
