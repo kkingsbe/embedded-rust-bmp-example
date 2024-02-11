@@ -2,8 +2,8 @@ use embedded_hal::prelude::_embedded_hal_blocking_delay_DelayMs;
 use stm32f4xx_hal::pac::TIM1;
 use stm32f4xx_hal::timer::{Delay, DelayMs}; //Bring the DelayMs trait into scope
 use crate::sensor::I2cInstance;
-use super::BMP180;
 use super::super::Barometer;
+use super::bmp180_s::BMP180;
 
 impl<'a, T> Barometer for BMP180<'a, T> where T: I2cInstance {
     fn pressure(&self) -> i32 {

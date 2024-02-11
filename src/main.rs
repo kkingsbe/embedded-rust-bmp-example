@@ -9,14 +9,14 @@
 pub mod sensor;
 use crate::sensor::barometer::Barometer;
 use crate::sensor::Sensor;
-use hal::serial::Config;
+use hal::{pac::USART1, serial::Config};
 use heapless::String;
-use sensor::barometer::bmp180::BMP180;
 
 //pub mod usb;
 
 use cortex_m::asm::nop;
 use panic_halt as _;
+use sensor::{barometer::bmp180::bmp180_s::BMP180, imu::{lsm9ds1::{self, lsm9ds1_s::LSM9DS1}, IMU}};
 use stm32f4xx_hal as hal;
 //use usb::USB;
 
@@ -40,7 +40,7 @@ fn main() -> ! {
     //WIP
     //let mut usb = USB::new(&p, rx_pin, tx_pin, &clocks);
     let serial_config = Config::default().baudrate(9600.bps());
-    let mut serial = Serial::new(p.USART1, (tx_pin, rx_pin), serial_config, &clocks).unwrap();
+    let mut serial: Serial<USART1> = Serial::new(p.USART1, (tx_pin, rx_pin), serial_config, &clocks).unwrap();
     
     let gpiob = p.GPIOB.split();
 
@@ -58,6 +58,20 @@ fn main() -> ! {
     let mut delay = p.TIM1.delay_ms(&clocks);
 
     //Initialize the sensor
+    let mut lsm9ds1 = LSM9DS1::new(&mut i2c);
+    let init_res = lsm9ds1.init();
+    if init_res.is_err() {
+        loop {}
+    }
+
+
+    loop {
+        let val = lsm9ds1.read_magnetometer();
+        writeln!(serial, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}", val.0, val.1, val.2).unwrap();
+        delay.delay_ms(500);
+    }
+
+    /*
     let mut bmp180 = BMP180::new(&mut i2c);
     let init_res = bmp180.init();
     if init_res.is_err() {
@@ -75,4 +89,5 @@ fn main() -> ! {
         delay.delay_ms(100);
         nop();
     }
+    */
 }

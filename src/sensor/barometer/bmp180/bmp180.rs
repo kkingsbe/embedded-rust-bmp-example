@@ -1,8 +1,7 @@
 use stm32f4xx_hal::{i2c::{I2c, Instance as I2cInstance}, pac::TIM1, timer::DelayMs};
 use embedded_hal::prelude::_embedded_hal_blocking_delay_DelayMs; //Bring the DelayMs trait into scope
 use crate::sensor::{SensorError, SensorState};
-
-use super::{BmpData, Coeffs, RegisterMap, BMP180};
+use super::bmp180_s::{BmpData, Coeffs, RegisterMap, BMP180};
 
 impl<'a, T  > BMP180<'a, T> where T: I2cInstance {
     pub fn new(i2c: &'a mut I2c<T>/*, delay: &'a mut DelayMs<TIM1>*/) -> Self {

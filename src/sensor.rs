@@ -1,4 +1,5 @@
 pub mod barometer;
+pub mod imu;
 use stm32f4xx_hal::i2c::{I2c, Instance as I2cInstance};
 
 pub enum SensorError {
