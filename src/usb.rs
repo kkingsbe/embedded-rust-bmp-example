@@ -1,7 +1,7 @@
 use core::fmt::Write;
 use stm32f4xx_hal::serial::Instance;
 use stm32f4xx_hal::{gpio::{gpioa::Parts, GpioExt, Output, Pin, PushPull}, pac::{Peripherals, TIM1, USART1}, rcc::Clocks, serial::{CommonPins, Config, Instance as SerialInstance}, timer::Delay};
-use crate::hal::{pac, prelude::*, serial::Serial}; // Add the import here
+use stm32f4xx_hal::{pac, prelude::*, serial::Serial}; // Add the import here
 
 /**
  * Currently only supports USART1. Any pins can be used however.
