@@ -1,6 +1,6 @@
 [package]
 name = "multi-mission-library-rs"
-version = "0.1.0"
+version = "0.1.1"
 description = "This crate is designed to hold composable, reusable driver code / wrappers for various sensors and hardware output devices. Currently it does not support differing STM32 models and only supports the STM32F4, however moving into the future that will be the plan."
 license = "MIT"
 edition = "2021"
