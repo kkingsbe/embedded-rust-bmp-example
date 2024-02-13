@@ -12,13 +12,13 @@ use crate::sensor::Sensor;
 use hal::{pac::USART1, serial::Config};
 use heapless::String;
 
-//pub mod usb;
+pub mod usb;
 
 use cortex_m::asm::nop;
 use panic_halt as _;
 use sensor::{barometer::bmp180::bmp180_s::BMP180, imu::{lsm9ds1::{self, lsm9ds1_s::LSM9DS1}, IMU}};
 use stm32f4xx_hal as hal;
-//use usb::USB;
+use usb::USB;
 
 use crate::hal::{pac, prelude::*, serial::Serial};
 use cortex_m_rt::entry;
@@ -37,10 +37,7 @@ fn main() -> ! {
     let tx_pin = gpioa.pa9;
     let rx_pin = gpioa.pa10;
 
-    //WIP
-    //let mut usb = USB::new(&p, rx_pin, tx_pin, &clocks);
-    let serial_config = Config::default().baudrate(9600.bps());
-    let mut serial: Serial<USART1> = Serial::new(p.USART1, (tx_pin, rx_pin), serial_config, &clocks).unwrap();
+    let mut usb = USB::new(p.USART1, rx_pin, tx_pin, &clocks);
     
     let gpiob = p.GPIOB.split();
 
@@ -67,7 +64,9 @@ fn main() -> ! {
 
     loop {
         let val = lsm9ds1.read_magnetometer();
-        writeln!(serial, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}", val.0, val.1, val.2).unwrap();
+        let mut message: String<64> = String::new();
+        write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}", val.0, val.1, val.2).unwrap();
+        usb.println(&message.as_str());
         delay.delay_ms(500);
     }
 
