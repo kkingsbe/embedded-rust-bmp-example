@@ -20,6 +20,8 @@ use sensor::{barometer::bmp180::bmp180_s::BMP180, imu::{lsm9ds1::{self, lsm9ds1_
 use stm32f4xx_hal as hal;
 use usb::USB;
 
+use micromath::F32Ext;
+
 use crate::hal::{pac, prelude::*, serial::Serial};
 use cortex_m_rt::entry;
 use stm32f4xx_hal::i2c::Mode;
@@ -61,13 +63,15 @@ fn main() -> ! {
         loop {}
     }
 
-
     loop {
         let val = lsm9ds1.read_magnetometer();
-        let mut message: String<64> = String::new();
-        write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}", val.0, val.1, val.2).unwrap();
+        let mut message: String<128> = String::new();
+        let write_res = write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}", val.0, val.1, val.2);
+        if write_res.is_err() {
+            loop {}
+        }
         usb.println(&message.as_str());
-        delay.delay_ms(500);
+        delay.delay_ms(100);
     }
 
     /*

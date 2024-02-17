@@ -25,6 +25,6 @@ impl <'a, T> Sensor for LSM9DS1<'a, T> where T: I2cInstance {
     }
 
     fn sensor_state(&self) -> &SensorState {
-        return &self.state;
+        &self.state
     }
 }

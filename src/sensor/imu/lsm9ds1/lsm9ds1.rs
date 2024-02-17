@@ -1,3 +1,4 @@
+use byteorder::{ByteOrder, LittleEndian};
 use cortex_m::asm::nop;
 use stm32f4xx_hal::{i2c::{I2c, Instance as I2cInstance}, pac::TIM1, timer::DelayMs};
 use embedded_hal::prelude::_embedded_hal_blocking_delay_DelayMs; //Bring the DelayMs trait into scope
@@ -61,12 +62,32 @@ impl<'a, T  > LSM9DS1<'a, T> where T: I2cInstance {
         }
     }
 
+    pub fn twos_compliment(&self, high: u8, low: u8) -> i16 {
+        let combined = LittleEndian::read_u16(&[low, high]);
+        let is_negative = (combined & 0x8000) != 0;
+
+        let mut result = combined as i16;
+        if is_negative {
+            result = -result;
+        }
+
+        result
+    }
+
     pub fn calibrate_magnetometer(&mut self) {
         let mut rx_buffer: [u8; 6] = [0; 6]; //The magnetometer has 6 registers that need to be read to get the calibration data, 2 for each axis
         let res = self.i2c.write_read(self.addr, &[self.register_map.magnetometer.out_x_l_m], &mut rx_buffer);
-        let x_offset = ((rx_buffer[1] as i16) << 8) | rx_buffer[0] as i16;
-        let y_offset = ((rx_buffer[3] as i16) << 8) | rx_buffer[2] as i16;
-        let z_offset = ((rx_buffer[5] as i16) << 8) | rx_buffer[4] as i16;
+
+        let xl = rx_buffer[0];
+        let xh = rx_buffer[1];
+        let yl = rx_buffer[2];
+        let yh = rx_buffer[3];
+        let zl = rx_buffer[4];
+        let zh = rx_buffer[5];
+
+        let x_offset = self.twos_compliment(xh, xl);
+        let y_offset = self.twos_compliment(yh, yl);
+        let z_offset = self.twos_compliment(zh, zl);
 
         self.calibration_info.magnetometer.x_offset = x_offset as i32;
         self.calibration_info.magnetometer.y_offset = y_offset as i32;

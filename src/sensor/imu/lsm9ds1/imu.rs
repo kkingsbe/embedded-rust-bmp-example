@@ -10,7 +10,7 @@ pub enum Axis {
 }
 
 impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
-    pub fn read_raw_magnetometer_axis(&mut self, axis: Axis) -> u32 {
+    pub fn read_raw_magnetometer_axis(&mut self, axis: Axis) -> i32 {
         let mut rx_buffer: [u8; 2] = [0; 2];
         let mut addr: u8 = match axis {
             Axis::X => self.register_map.magnetometer.out_x_l_m,
@@ -18,32 +18,30 @@ impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
             Axis::Z => self.register_map.magnetometer.out_z_l_m
         };
 
+        //Incoming data is little-endian by default
         let res = self.i2c.write_read(self.addr, &[addr], &mut rx_buffer);
-        let combined = ((rx_buffer[1] as u32) << 8) | rx_buffer[0] as u32;
-        let result = combined; /*= if combined & 0x8000 != 0 {
-            !combined + 1
-        } else {
-            combined
-        };*/
+        let high = rx_buffer[1];
+        let low = rx_buffer[0];
+        let result = self.twos_compliment(high, low);
 
         let correction_value = match axis {
             Axis::X => self.calibration_info.magnetometer.x_offset,
             Axis::Y => self.calibration_info.magnetometer.y_offset,
             Axis::Z => self.calibration_info.magnetometer.z_offset
         };
-        
-        result - correction_value as u32
+
+        result as i32 - correction_value
     }
 
-    pub fn read_magnetometer_x(&mut self) -> u32 {
+    pub fn read_magnetometer_x(&mut self) -> i32 {
         self.read_raw_magnetometer_axis(Axis::X)
     }
 
-    pub fn read_magnetometer_y(&mut self) -> u32 {
+    pub fn read_magnetometer_y(&mut self) -> i32 {
         self.read_raw_magnetometer_axis(Axis::Y)
     }
 
-    pub fn read_magnetometer_z(&mut self) -> u32 {
+    pub fn read_magnetometer_z(&mut self) -> i32 {
         self.read_raw_magnetometer_axis(Axis::X)
     }
 }
@@ -57,7 +55,7 @@ impl<'a, T> IMU for LSM9DS1<'a, T> where T: I2cInstance {
         (0, 0, 0)
     }
 
-    fn read_magnetometer(&mut self) -> (u32, u32, u32) {
+    fn read_magnetometer(&mut self) -> (i32, i32, i32) {
         let x = self.read_magnetometer_x();
         let y = self.read_magnetometer_y();
         let z = self.read_magnetometer_z();
