@@ -6,3 +6,4 @@
 
 pub mod sensor;
 pub mod usb;
+pub mod pwm;

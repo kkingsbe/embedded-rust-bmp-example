@@ -7,12 +7,16 @@
 #![no_std]
 
 pub mod sensor;
+pub mod pwm;
+pub mod usb;
+
+use multi_mission_library;
+
 use crate::sensor::barometer::Barometer;
 use crate::sensor::Sensor;
+use pwm::servo::pca9685::pca9685_s::Pca9685;
 use hal::{pac::USART1, serial::Config};
 use heapless::String;
-
-pub mod usb;
 
 use cortex_m::asm::nop;
 use panic_halt as _;
@@ -56,7 +60,15 @@ fn main() -> ! {
 
     let mut delay = p.TIM1.delay_ms(&clocks);
 
+    let mut driver = Pca9685::new(&mut i2c);
+    driver.set_pwm();
+
+    loop {
+        
+    }
+
     //Initialize the sensor
+    /*
     let mut lsm9ds1 = LSM9DS1::new(&mut i2c);
     let init_res = lsm9ds1.init();
     if init_res.is_err() {
@@ -73,6 +85,7 @@ fn main() -> ! {
         usb.println(&message.as_str());
         delay.delay_ms(100);
     }
+    */
 
     /*
     let mut bmp180 = BMP180::new(&mut i2c);
