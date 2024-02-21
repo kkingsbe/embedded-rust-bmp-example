@@ -61,10 +61,28 @@ fn main() -> ! {
     let mut delay = p.TIM1.delay_ms(&clocks);
 
     let mut driver = Pca9685::new(&mut i2c);
-    driver.set_pwm();
 
+    let mut i = 0.0;
+    let min_ds = 0.1;
+    let max_ds = 0.5;
+    let mut forwards = true;
+    //driver.set_pwm(0, 0.3);
     loop {
-        
+        driver.set_pwm(0, i);
+
+        if i >= max_ds {
+            forwards = false;
+        } else if i <= min_ds {
+            forwards = true;
+        }
+
+        if forwards {
+            i += 0.01;
+        } else {
+            i -= 0.01;
+        }
+
+        delay.delay_ms(10);
     }
 
     //Initialize the sensor
