@@ -45,10 +45,10 @@ impl<'a, T  > Pca9685<'a, T> where T: I2cInstance {
         nop();
     }
 
-    pub fn set_angle(&mut self, angle: u16) -> Result<(), ()> {
+    // pub fn set_angle(&mut self, angle: u16) -> Result<(), ()> {
         
-        return 
-    }
+    //     return 
+    // }
 
     pub fn set_pwm(&mut self, channel: u8, duty_cycle: f32) -> Result<(), SetPwmError> {
         if channel > 15 {
