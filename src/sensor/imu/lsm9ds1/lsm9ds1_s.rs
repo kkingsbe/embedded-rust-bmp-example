@@ -13,6 +13,18 @@ pub struct ImuAccelerationData {
     pub z: i32
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum XlOdr {
+    PowerDown = 0,
+    Hz10 = 1,
+    Hz50 = 2,
+    Hz119 = 3,
+    Hz238 = 4,
+    Hz476 = 5,
+    Hz952 = 6,
+    CONTINUOUS = 7
+}
+
 pub struct ImuData {
     pub acceleration: ImuAccelerationData
 }
@@ -30,7 +42,8 @@ impl ImuData {
 }
 
 pub struct LSM9DS1<'a, T> where T: I2cInstance {
-    pub addr: u8,
+    pub m_addr: u8, //Magnetometer address
+    pub addr: u8, //Accelerometer and Gyroscope address
     pub register_map: RegisterMap,
     pub i2c: &'a mut I2c<T>, //Allows for the BMP180 struct to not take ownership of the I2C instance, which means multiple devices can be on the same bus :)
     pub state: SensorState,
@@ -61,7 +74,8 @@ pub struct MagnetometerCalibration {
 }
 
 pub struct RegisterMap {
-   pub magnetometer: MagnetometerRM
+   pub magnetometer: MagnetometerRM,
+   pub accelerometer: AccelerometerRM
 }
 
 pub struct MagnetometerRM {
@@ -120,10 +134,23 @@ impl MagnetometerRM {
     }
 }
 
+pub struct AccelerometerRM {
+    pub ctrl_reg6_xl: u8,
+}
+
+impl AccelerometerRM {
+    pub fn new() -> Self {
+        AccelerometerRM {
+            ctrl_reg6_xl: 0x20
+        }
+    }
+}
+
 impl RegisterMap {
     pub fn new() -> Self {
         RegisterMap {
-            magnetometer: MagnetometerRM::new()
+            magnetometer: MagnetometerRM::new(),
+            accelerometer: AccelerometerRM::new(),
         }
     }
 }

@@ -19,7 +19,7 @@ impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
         };
 
         //Incoming data is little-endian by default
-        let res = self.i2c.write_read(self.addr, &[addr], &mut rx_buffer);
+        let res = self.i2c.write_read(self.m_addr, &[addr], &mut rx_buffer);
         let high = rx_buffer[1];
         let low = rx_buffer[0];
         let result = self.twos_compliment(high, low);
@@ -48,6 +48,7 @@ impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
 
 impl<'a, T> IMU for LSM9DS1<'a, T> where T: I2cInstance {
     fn read_acceleration(&mut self) -> (i32, i32, i32) {
+        //todo: implement this
         (0, 0, 0)
     }
 

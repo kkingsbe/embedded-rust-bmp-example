@@ -60,6 +60,16 @@ fn main() -> ! {
 
     let mut delay = p.TIM1.delay_ms(&clocks);
 
+    let mut imu = LSM9DS1::new(&mut i2c);
+    imu.init();
+    imu.calibrate();
+
+    loop {
+        imu.read_acceleration();
+        delay.delay_ms(100);
+    }
+
+    /*
     let mut driver = Pca9685::new(&mut i2c);
 
     let mut i = 0.0;
@@ -84,6 +94,7 @@ fn main() -> ! {
 
         delay.delay_ms(10);
     }
+    */
 
     //Initialize the sensor
     /*

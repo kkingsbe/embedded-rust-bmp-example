@@ -10,6 +10,7 @@ impl <'a, T> Sensor for LSM9DS1<'a, T> where T: I2cInstance {
         }
 
         self.boot_magnetometer();
+        self.boot_accelerometer();
 
         self.calibrate()
     }
@@ -18,6 +19,7 @@ impl <'a, T> Sensor for LSM9DS1<'a, T> where T: I2cInstance {
         self.state = SensorState::CALIBRATING;
 
         self.calibrate_magnetometer();
+        self.calibrate_accelerometer();
 
         self.state = SensorState::READY;
 
