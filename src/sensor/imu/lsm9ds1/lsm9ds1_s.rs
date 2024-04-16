@@ -25,6 +25,17 @@ pub enum XlOdr {
     CONTINUOUS = 7
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum GyroOdr {
+    PowerDown = 0,
+    Hz15 = 1,
+    Hz60 = 2,
+    Hz119 = 3,
+    Hz238 = 4,
+    Hz952 = 5,
+    CONTINUOUS = 6
+}
+
 pub struct ImuData {
     pub acceleration: ImuAccelerationData
 }
@@ -44,7 +55,6 @@ impl ImuData {
 pub struct LSM9DS1<'a, T> where T: I2cInstance {
     pub m_addr: u8, //Magnetometer address
     pub addr: u8, //Accelerometer and Gyroscope address
-    pub register_map: RegisterMap,
     pub i2c: &'a mut I2c<T>, //Allows for the BMP180 struct to not take ownership of the I2C instance, which means multiple devices can be on the same bus :)
     pub state: SensorState,
     pub data: ImuData,
@@ -73,96 +83,44 @@ pub struct MagnetometerCalibration {
     pub z_offset: i32
 }
 
-pub struct RegisterMap {
-   pub magnetometer: MagnetometerRM,
-   pub accelerometer: AccelerometerRM
+pub enum MagnetometerRM {
+    OffsetXRegLM = 0x05,
+    OffsetXRegHM = 0x06,
+    OffsetYRegLM = 0x07,
+    OffsetYRegHM = 0x08,
+    OffsetZRegLM = 0x09,
+    OffsetZRegHM = 0x0A,
+    WhoAmI = 0x0F,
+    CtrlReg1M = 0x20,
+    CtrlReg2M = 0x21,
+    CtrlReg3M = 0x22,
+    CtrlReg4M = 0x23,
+    CtrlReg5M = 0x24,
+    StatusRegM = 0x27,
+    OutXLM = 0x28,
+    OutXHM = 0x29,
+    OutYLM = 0x2A,
+    OutYHM = 0x2B,
+    OutZLM = 0x2C,
+    OutZHM = 0x2D
 }
 
-pub struct MagnetometerRM {
-    pub offset_x_reg_l_m: u8,
-    pub offset_x_reg_h_m: u8,
-    pub offset_y_reg_l_m: u8,
-    pub offset_y_reg_h_m: u8,
-    pub offset_z_reg_l_m: u8,
-    pub offset_z_reg_h_m: u8,
-    pub who_am_i: u8,
-    pub ctrl_reg1_m: u8,
-    pub ctrl_reg2_m: u8,
-    pub ctrl_reg3_m: u8,
-    pub ctrl_reg4_m: u8,
-    pub ctrl_reg5_m: u8,
-    pub status_reg_m: u8,
-    pub out_x_l_m: u8,
-    pub out_x_h_m: u8,
-    pub out_y_l_m: u8,
-    pub out_y_h_m: u8,
-    pub out_z_l_m: u8,
-    pub out_z_h_m: u8,
-    pub int_cfg_m: u8,
-    pub int_src_m: u8,
-    pub int_ths_l_m: u8,
-    pub int_ths_h_m: u8,
+pub enum AccelerometerRM {
+    CtrlReg6Xl = 0x20,
+    OutXXlL = 0x28,
+    OutXXlH = 0x29,
+    OutYXlL = 0x2A,
+    OutYXlH = 0x2B,
+    OutZXlL = 0x2C,
+    OutZXlH = 0x2D
 }
 
-impl MagnetometerRM {
-    pub fn new() -> Self {
-        MagnetometerRM {
-            offset_x_reg_l_m: 0x05,
-            offset_x_reg_h_m: 0x06,
-            offset_y_reg_l_m: 0x07,
-            offset_y_reg_h_m: 0x08,
-            offset_z_reg_l_m: 0x09,
-            offset_z_reg_h_m: 0x0A,
-            who_am_i: 0x0F,
-            ctrl_reg1_m: 0x20,
-            ctrl_reg2_m: 0x21,
-            ctrl_reg3_m: 0x22,
-            ctrl_reg4_m: 0x23,
-            ctrl_reg5_m: 0x24,
-            status_reg_m: 0x27,
-            out_x_l_m: 0x28,
-            out_x_h_m: 0x29,
-            out_y_l_m: 0x2A,
-            out_y_h_m: 0x2B,
-            out_z_l_m: 0x2C,
-            out_z_h_m: 0x2D,
-            int_cfg_m: 0x30,
-            int_src_m: 0x31,
-            int_ths_l_m: 0x32,
-            int_ths_h_m: 0x33
-        }
-    }
-}
-
-pub struct AccelerometerRM {
-    pub ctrl_reg6_xl: u8,
-    pub out_x_xl_l: u8,
-    pub out_x_xl_h: u8,
-    pub out_y_xl_l: u8,
-    pub out_y_xl_h: u8,
-    pub out_z_xl_l: u8,
-    pub out_z_xl_h: u8
-}
-
-impl AccelerometerRM {
-    pub fn new() -> Self {
-        AccelerometerRM {
-            ctrl_reg6_xl: 0x20,
-            out_x_xl_l: 0x28,
-            out_x_xl_h: 0x29,
-            out_y_xl_l: 0x2A,
-            out_y_xl_h: 0x2B,
-            out_z_xl_l: 0x2C,
-            out_z_xl_h: 0x2D
-        }
-    }
-}
-
-impl RegisterMap {
-    pub fn new() -> Self {
-        RegisterMap {
-            magnetometer: MagnetometerRM::new(),
-            accelerometer: AccelerometerRM::new(),
-        }
-    }
+pub enum GyroRM {
+    CtrlReg1G = 0x10,
+    OutXGL = 0x18,
+    OutXGH = 0x19,
+    OutYGL = 0x1A,
+    OutYGH = 0x1B,
+    OutZGL = 0x1C,
+    OutZGH = 0x1D
 }

@@ -9,8 +9,9 @@ impl <'a, T> Sensor for LSM9DS1<'a, T> where T: I2cInstance {
             return Err(());
         }
 
-        self.boot_magnetometer();
-        self.boot_accelerometer();
+        self.boot_magnetometer().unwrap();
+        self.boot_accelerometer().unwrap();
+        self.boot_gyroscope().unwrap();
 
         self.calibrate()
     }
@@ -20,6 +21,7 @@ impl <'a, T> Sensor for LSM9DS1<'a, T> where T: I2cInstance {
 
         self.calibrate_magnetometer();
         self.calibrate_accelerometer();
+        self.calibrate_gyroscope();
 
         self.state = SensorState::READY;
 

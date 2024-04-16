@@ -20,7 +20,7 @@ use heapless::String;
 
 use cortex_m::asm::nop;
 use panic_halt as _;
-use sensor::{barometer::bmp180::bmp180_s::BMP180, imu::{lsm9ds1::{self, lsm9ds1_s::LSM9DS1}, IMU}};
+use sensor::{barometer::bmp180::bmp180_s::BMP180, imu::{lsm9ds1::{self, lsm9ds1_s::LSM9DS1}, Gyroscope, Magnetometer, Accelerometer}};
 use stm32f4xx_hal as hal;
 use usb::USB;
 
@@ -63,11 +63,19 @@ fn main() -> ! {
     let mut imu = LSM9DS1::new(&mut i2c);
     imu.init();
     imu.calibrate();
+    let mut i: u32 = 0;
 
     loop {
         let acc = imu.read_acceleration();
+        let g = imu.read_gyro();
+        let m = imu.read_magnetometer();
+        //let write_res = write!(message, "Acc_X: {}, Acc_Y: {}, Acc_Z: {}", acc.0, acc.1, acc.2);
+        
         let mut message: String<128> = String::new();
-        let write_res = write!(message, "Acc_X: {}, Acc_Y: {}, Acc_Z: {}", acc.0, acc.1, acc.2);
+        //let write_res = write!(message, "Gyro_X: {}, Gyro_Y: {}, Gyro_Z: {}\n", g.0, g.1, g.2);
+        
+        let write_res = write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}\n", m.0, m.1, m.2);
+        
         usb.println(&message.as_str());
         delay.delay_ms(10);
     }
