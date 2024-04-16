@@ -69,13 +69,18 @@ fn main() -> ! {
         let acc = imu.read_acceleration();
         let g = imu.read_gyro();
         let m = imu.read_magnetometer();
+
+        let angle = (m.0 as f32).atan2(m.1 as f32).to_degrees();
+
         //let write_res = write!(message, "Acc_X: {}, Acc_Y: {}, Acc_Z: {}", acc.0, acc.1, acc.2);
         
         let mut message: String<128> = String::new();
         //let write_res = write!(message, "Gyro_X: {}, Gyro_Y: {}, Gyro_Z: {}\n", g.0, g.1, g.2);
         
-        let write_res = write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}\n", m.0, m.1, m.2);
+        //let write_res = write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}\n", m.0, m.1, m.2);
         
+        let write_res = write!(message, "Angle: {}deg\n", angle);
+
         usb.println(&message.as_str());
         delay.delay_ms(10);
     }

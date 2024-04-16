@@ -71,7 +71,7 @@ impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
             Axis::Z => self.calibration_info.magnetometer.z_offset
         };
 
-        (result as i32 - correction_value) / range
+        (result as i32 /*- correction_value*/) / range
     }
 
     pub fn read_magnetometer_x(&mut self) -> i32 {
