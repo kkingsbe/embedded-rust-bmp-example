@@ -65,8 +65,11 @@ fn main() -> ! {
     imu.calibrate();
 
     loop {
-        imu.read_acceleration();
-        delay.delay_ms(100);
+        let acc = imu.read_acceleration();
+        let mut message: String<128> = String::new();
+        let write_res = write!(message, "Acc_X: {}, Acc_Y: {}, Acc_Z: {}", acc.0, acc.1, acc.2);
+        usb.println(&message.as_str());
+        delay.delay_ms(10);
     }
 
     /*

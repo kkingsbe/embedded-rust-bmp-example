@@ -22,7 +22,7 @@ impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
         let res = self.i2c.write_read(self.m_addr, &[addr], &mut rx_buffer);
         let high = rx_buffer[1];
         let low = rx_buffer[0];
-        let result = self.twos_compliment(high, low);
+        let result = self.twos_complement(high, low);
 
         let correction_value = match axis {
             Axis::X => self.calibration_info.magnetometer.x_offset,
@@ -47,9 +47,20 @@ impl<'a, T> LSM9DS1<'a, T> where T: I2cInstance {
 }
 
 impl<'a, T> IMU for LSM9DS1<'a, T> where T: I2cInstance {
-    fn read_acceleration(&mut self) -> (i32, i32, i32) {
-        //todo: implement this
-        (0, 0, 0)
+    fn read_acceleration(&mut self) -> (f32, f32, f32) {
+        let g_range = 2; //2g max reading
+
+        let mut rx_buffer: [u8; 6] = [0; 6];
+        let res = self.i2c.write_read(self.addr, &[self.register_map.accelerometer.out_x_xl_l], &mut rx_buffer);
+        let x_raw = self.twos_complement(rx_buffer[1], rx_buffer[0]);
+        let y_raw = self.twos_complement(rx_buffer[3], rx_buffer[2]);
+        let z_raw = self.twos_complement(rx_buffer[5], rx_buffer[4]);
+        
+        let x = ((x_raw as i32 * g_range as i32) as f64 / i16::max_value() as f64) as f32;
+        let y = ((y_raw as i32 * g_range as i32) as f64 / i16::max_value() as f64) as f32;
+        let z = ((z_raw as i32 * g_range as i32) as f64 / i16::max_value() as f64) as f32;
+
+        (x, y, z)
     }
 
     fn read_gyro(&mut self) -> (i32, i32, i32) {

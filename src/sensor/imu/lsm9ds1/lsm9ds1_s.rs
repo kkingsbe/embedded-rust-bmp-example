@@ -136,12 +136,24 @@ impl MagnetometerRM {
 
 pub struct AccelerometerRM {
     pub ctrl_reg6_xl: u8,
+    pub out_x_xl_l: u8,
+    pub out_x_xl_h: u8,
+    pub out_y_xl_l: u8,
+    pub out_y_xl_h: u8,
+    pub out_z_xl_l: u8,
+    pub out_z_xl_h: u8
 }
 
 impl AccelerometerRM {
     pub fn new() -> Self {
         AccelerometerRM {
-            ctrl_reg6_xl: 0x20
+            ctrl_reg6_xl: 0x20,
+            out_x_xl_l: 0x28,
+            out_x_xl_h: 0x29,
+            out_y_xl_l: 0x2A,
+            out_y_xl_h: 0x2B,
+            out_z_xl_l: 0x2C,
+            out_z_xl_h: 0x2D
         }
     }
 }

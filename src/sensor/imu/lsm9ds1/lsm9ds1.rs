@@ -69,16 +69,13 @@ impl<'a, T  > LSM9DS1<'a, T> where T: I2cInstance {
         }
     }
 
-    pub fn twos_compliment(&self, high: u8, low: u8) -> i16 {
+    pub fn twos_complement(&self, high: u8, low: u8) -> i16 {
+        // Reads the two bytes as a little-endian 16-bit unsigned integer
         let combined = LittleEndian::read_u16(&[low, high]);
-        let is_negative = (combined & 0x8000) != 0;
-
-        let mut result = combined as i16;
-        if is_negative {
-            result = -result;
-        }
-
-        result
+        
+        // Directly cast the unsigned integer to a signed integer
+        // This inherently interprets the value as two's complement if the sign bit is set
+        combined as i16
     }
 
     pub fn calibrate_magnetometer(&mut self) {
@@ -92,9 +89,9 @@ impl<'a, T  > LSM9DS1<'a, T> where T: I2cInstance {
         let zl = rx_buffer[4];
         let zh = rx_buffer[5];
 
-        let x_offset = self.twos_compliment(xh, xl);
-        let y_offset = self.twos_compliment(yh, yl);
-        let z_offset = self.twos_compliment(zh, zl);
+        let x_offset = self.twos_complement(xh, xl);
+        let y_offset = self.twos_complement(yh, yl);
+        let z_offset = self.twos_complement(zh, zl);
 
         self.calibration_info.magnetometer.x_offset = x_offset as i32;
         self.calibration_info.magnetometer.y_offset = y_offset as i32;
