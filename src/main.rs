@@ -15,7 +15,7 @@ use multi_mission_library;
 use crate::sensor::barometer::Barometer;
 use crate::sensor::Sensor;
 use pwm::servo::pca9685::pca9685_s::Pca9685;
-use hal::{pac::USART1, serial::Config};
+use hal::{dwt::{self, MonoTimer}, interrupt, pac::USART1, serial::Config};
 use heapless::String;
 
 use cortex_m::asm::nop;
@@ -27,10 +27,16 @@ use usb::USB;
 use micromath::F32Ext;
 
 use crate::hal::{pac, prelude::*, serial::Serial};
-use cortex_m_rt::entry;
+use cortex_m_rt::{entry, exception};
 use stm32f4xx_hal::i2c::Mode;
 
 use core::fmt::Write;
+
+use imu_fusion::{FusionAhrsSettings, FusionVector};
+
+use cortex_m::peripheral::scb::Exception::SysTick;
+use cortex_m::interrupt::Mutex;
+use core::cell::RefCell;
 
 #[entry]
 fn main() -> ! {
@@ -63,14 +69,33 @@ fn main() -> ! {
     let mut imu = LSM9DS1::new(&mut i2c);
     imu.init();
     imu.calibrate();
+
+    let ahrs_settings = FusionAhrsSettings::new();
+    let data_rate = 35;
+    let mut fusion = imu_fusion::Fusion::new(data_rate, ahrs_settings); //50hz update rate
+
+    
+    let mut timestamp: f32 = 0.;
     let mut i: u32 = 0;
 
     loop {
         let acc = imu.read_acceleration();
         let g = imu.read_gyro();
         let m = imu.read_magnetometer();
+        
+        let acc_fv = FusionVector::new(acc.0 as f32, acc.1 as f32, acc.2 as f32);
+        let g_fv = FusionVector::new(g.0 as f32, g.1 as f32, g.2 as f32);
+        let m_fv = FusionVector::new(m.0 as f32, m.1 as f32, m.2 as f32);
 
-        let angle = (m.0 as f32).atan2(m.1 as f32).to_degrees();
+        let heading = (m.0 as f32).atan2(m.1 as f32).to_degrees();
+        let pitch = (acc.0 as f32).atan2(((acc.1 * acc.1) + (acc.2 * acc.2)).sqrt()).to_degrees();
+        let roll = (acc.1 as f32).atan2(((acc.0 * acc.0) + (acc.2 * acc.2)).sqrt()).to_degrees();
+
+        //timestamp += 1.0 / data_rate as f32;
+        //fusion.update(g_fv, acc_fv, m_fv, timestamp as f32);
+        //let euler = fusion.euler();
+
+        //let angle = (m.0 as f32).atan2(m.1 as f32).to_degrees();
 
         //let write_res = write!(message, "Acc_X: {}, Acc_Y: {}, Acc_Z: {}", acc.0, acc.1, acc.2);
         
@@ -79,7 +104,7 @@ fn main() -> ! {
         
         //let write_res = write!(message, "Mag_X: {}, Mag_Y: {}, Mag_Z: {}\n", m.0, m.1, m.2);
         
-        let write_res = write!(message, "Angle: {}deg\n", angle);
+        let write_res = write!(message, "Orientation: {}, {}, {}", roll, pitch, heading);
 
         usb.println(&message.as_str());
         delay.delay_ms(10);

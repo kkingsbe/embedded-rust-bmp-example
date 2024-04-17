@@ -23,6 +23,7 @@ cortex-m-rt = "^0.7.3"
 embedded-hal = "0.2.4"
 panic-halt = "^0.2.0"
 micromath = "2.1.0"
+imu-fusion = "0.2.4"
 byteorder = { version = "1.5", default-features = false }
 
 [dependencies.stm32f4xx-hal]
