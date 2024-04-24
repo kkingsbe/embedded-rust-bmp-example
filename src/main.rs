@@ -1,6 +1,5 @@
 //cargo flash --chip stm32f411ceux --release
 
-#![deny(unsafe_code)]
 #![deny(warnings)]
 #![allow(unused)]
 #![no_main]

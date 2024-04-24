@@ -1,4 +1,3 @@
-#![deny(unsafe_code)]
 #![deny(warnings)]
 #![allow(unused)]
 #![no_main]
